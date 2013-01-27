@@ -285,10 +285,10 @@ static inline void mat2_init_scale(mat2 *a, float value)
     mat_init_scale(a->data, value, 2);
 }
 
-static inline void mat2_init_rotate(mat2 *a, float radians)
+static inline void mat2_init_rotate(mat2 *a, float angle)
 {
-    mat2_init(a, cos(radians), -sin(radians),
-                 sin(radians), cos(radians));
+    mat2_init(a, cos(angle), -sin(angle),
+                 sin(angle), cos(angle));
 }
 
 static inline void mat2_transpose(mat2 *a)
