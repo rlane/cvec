@@ -109,7 +109,7 @@ static inline void mat_set(float *a, int i, int j, float value, int n)
     a[i + n*j] = value;
 }
 
-static inline void mat_zero(float *a, int n)
+static inline void mat_init_zero(float *a, int n)
 {
     int i;
     for (i = 0; i < n*n; i++) {
@@ -117,7 +117,7 @@ static inline void mat_zero(float *a, int n)
     }
 }
 
-static inline void mat_identity(float *a, int n)
+static inline void mat_init_identity(float *a, int n)
 {
     int i, j;
     for (j = 0; j < n; j++) {
@@ -128,7 +128,7 @@ static inline void mat_identity(float *a, int n)
     }
 }
 
-static inline void mat_scaling(float *a, float value, int n)
+static inline void mat_init_scale(float *a, float value, int n)
 {
     int i, j;
     for (j = 0; j < n; j++) {
@@ -201,22 +201,22 @@ static inline void mat2_init(mat2 *a, float v00, float v01, float v10, float v11
     mat2_set(a, 1, 1, v11);
 }
 
-static inline void mat2_zero(mat2 *a)
+static inline void mat2_init_zero(mat2 *a)
 {
-    mat_zero(a->data, 2);
+    mat_init_zero(a->data, 2);
 }
 
-static inline void mat2_identity(mat2 *a)
+static inline void mat2_init_identity(mat2 *a)
 {
-    mat_identity(a->data, 2);
+    mat_init_identity(a->data, 2);
 }
 
-static inline void mat2_scaling(mat2 *a, float value)
+static inline void mat2_init_scale(mat2 *a, float value)
 {
-    mat_scaling(a->data, value, 2);
+    mat_init_scale(a->data, value, 2);
 }
 
-static inline void mat2_rotation(mat2 *a, float radians)
+static inline void mat2_init_rotate(mat2 *a, float radians)
 {
     mat2_init(a, cos(radians), -sin(radians),
                  sin(radians), cos(radians));

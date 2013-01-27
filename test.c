@@ -89,7 +89,7 @@ static void test_mat2(void)
 {
     {
         mat2 a[1];
-        mat2_zero(a);
+        mat2_init_zero(a);
         assert_equal(0, mat2_get(a, 0, 0));
         assert_equal(0, mat2_get(a, 0, 1));
         assert_equal(0, mat2_get(a, 1, 0));
@@ -98,7 +98,7 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
-        mat2_identity(a);
+        mat2_init_identity(a);
         assert_equal(1, mat2_get(a, 0, 0));
         assert_equal(0, mat2_get(a, 0, 1));
         assert_equal(0, mat2_get(a, 1, 0));
@@ -107,7 +107,7 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
-        mat2_scaling(a, 2);
+        mat2_init_scale(a, 2);
         assert_equal(2, mat2_get(a, 0, 0));
         assert_equal(0, mat2_get(a, 0, 1));
         assert_equal(0, mat2_get(a, 1, 0));
@@ -116,7 +116,7 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
-        mat2_zero(a);
+        mat2_init_zero(a);
         mat2_set(a, 1, 0, 1);
         assert_equal(0, mat2_get(a, 0, 1));
         mat2_transpose(a);
@@ -126,7 +126,7 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
-        mat2_identity(a);
+        mat2_init_identity(a);
         vec2 r = mat2_transform(a, Vec2(2, 3));
         assert_equal(2, r.x);
         assert_equal(3, r.y);
@@ -143,8 +143,8 @@ static void test_mat2(void)
 
     {
         mat2 a[1], b[1], r[1];
-        mat2_identity(a);
-        mat2_identity(b);
+        mat2_init_identity(a);
+        mat2_init_identity(b);
         mat2_mult(a, b, r);
         assert_equal(1, mat2_get(r, 0, 0));
         assert_equal(0, mat2_get(r, 0, 1));
@@ -167,7 +167,7 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
-        mat2_rotation(a, M_PI/2);
+        mat2_init_rotate(a, M_PI/2);
         vec2 r = mat2_transform(a, Vec2(2, 3));
         assert_equal(-3, r.x);
         assert_equal(2, r.y);
