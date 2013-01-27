@@ -22,6 +22,17 @@ static inline bool approx_equal(double a, double b)
         } \
     } while (0)
 
+static inline void _assert_vec2_equal(vec2 expected, vec2 value, const char *file, int line)
+{
+    if (!approx_equal(expected.x, value.x) ||
+        !approx_equal(expected.y, value.y)) {
+        fprintf(stderr, "%s:%d expected (%g, %g), got (%g, %g)\n", file, line, expected.x, expected.y, value.x, value.y);
+        abort();
+    }
+}
+
+#define assert_vec2_equal(expected, value) _assert_vec2_equal(expected, value, __FILE__, __LINE__)
+
 static inline void _assert_vec3_equal(vec3 expected, vec3 value, const char *file, int line)
 {
     if (!approx_equal(expected.x, value.x) ||
@@ -57,14 +68,12 @@ static void test_vec2(void)
         vec2 a = { 1, 2 };
         vec2 b = { 3, 4 };
         vec2 r = vec2_add(a, b);
-        assert_equal(4, r.x);
-        assert_equal(6, r.y);
+        assert_vec2_equal(Vec2(4, 6), r);
     }
 
     {
         vec2 r = vec2_add(Vec2(1, 2), Vec2(3, 4));
-        assert_equal(4, r.x);
-        assert_equal(6, r.y);
+        assert_vec2_equal(Vec2(4, 6), r);
     }
 
     {
@@ -72,23 +81,20 @@ static void test_vec2(void)
         vec2 b = { 3, 4 };
         vec2 c = { 5, 6 };
         vec2 r = vec2_add(vec2_add(a, b), c);
-        assert_equal(9, r.x);
-        assert_equal(12, r.y);
+        assert_vec2_equal(Vec2(9, 12), r);
     }
 
     {
         vec2 a = { 1, 2 };
         vec2 b = { 3, -4 };
         vec2 r = vec2_sub(a, b);
-        assert_equal(-2, r.x);
-        assert_equal(6, r.y);
+        assert_vec2_equal(Vec2(-2, 6), r);
     }
 
     {
         vec2 a = { 1, 2 };
         vec2 r = vec2_scale(a, 2);
-        assert_equal(2, r.x);
-        assert_equal(4, r.y);
+        assert_vec2_equal(Vec2(2, 4), r);
     }
 
     {
@@ -114,8 +120,7 @@ static void test_vec2(void)
     {
         vec2 a = { 3, 4 };
         vec2 r = vec2_normalize(a);
-        assert_equal(0.6, r.x);
-        assert_equal(0.8, r.y);
+        assert_vec2_equal(Vec2(0.6, 0.8), r);
     }
 }
 
@@ -237,8 +242,7 @@ static void test_mat2(void)
         vec2 r;
         mat2_init_identity(a);
         r = mat2_transform(a, Vec2(2, 3));
-        assert_equal(2, r.x);
-        assert_equal(3, r.y);
+        assert_vec2_equal(Vec2(2, 3), r);
     }
 
     {
@@ -247,8 +251,7 @@ static void test_mat2(void)
         mat2_init(a, 5, 6,
                      7, 8);
         r = mat2_transform(a, Vec2(2, 3));
-        assert_equal(2*5 + 3*6, r.x);
-        assert_equal(2*7 + 3*8, r.y);
+        assert_vec2_equal(Vec2(2*5 + 3*6, 2*7 + 3*8), r);
     }
 
     {
@@ -280,8 +283,7 @@ static void test_mat2(void)
         vec2 r;
         mat2_init_rotate(a, M_PI/2);
         r = mat2_transform(a, Vec2(2, 3));
-        assert_equal(-3, r.x);
-        assert_equal(2, r.y);
+        assert_vec2_equal(Vec2(-3, 2), r);
     }
 }
 
