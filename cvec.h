@@ -45,9 +45,16 @@ typedef struct vec2 {
     float y;
 } vec2;
 
+typedef struct vec3 {
+    float x;
+    float y;
+    float z;
+} vec3;
+
 typedef struct mat2 {
     float data[4];
 } mat2;
+
 
 /* vec2 functions */
 
@@ -93,6 +100,54 @@ static inline vec2 vec2_normalize(vec2 a)
 {
     float len = vec2_length(a);
     return Vec2(a.x/len, a.y/len);
+}
+
+
+/* vec3 functions */
+
+static inline vec3 Vec3(float x, float y, float z)
+{
+    vec3 r;
+    r.x = x;
+    r.y = y;
+    r.z = z;
+    return r;
+}
+
+static inline vec3 vec3_add(vec3 a, vec3 b)
+{
+    return Vec3(a.x+b.x, a.y+b.y, a.z+b.z);
+}
+
+static inline vec3 vec3_sub(vec3 a, vec3 b)
+{
+    return Vec3(a.x-b.x, a.y-b.y, a.z-b.z);
+}
+
+static inline vec3 vec3_scale(vec3 a, float c)
+{
+    return Vec3(a.x*c, a.y*c, a.z*c);
+}
+
+static inline float vec3_dot(vec3 a, vec3 b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+static inline float vec3_length(vec3 a)
+{
+    return sqrtf(a.x*a.x + a.y*a.y + a.z*a.z);
+}
+
+static inline float vec3_distance(vec3 a, vec3 b)
+{
+    return vec3_length(vec3_sub(a, b));
+}
+
+static inline vec3 vec3_normalize(vec3 a)
+{
+    float len = vec3_length(a);
+    return Vec3(a.x/len, a.y/len, a.z/len);
 }
 
 

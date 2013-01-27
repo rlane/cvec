@@ -85,6 +85,80 @@ static void test_vec2(void)
     }
 }
 
+static void test_vec3(void)
+{
+    {
+        vec3 a = { 1, 2, 3 };
+        vec3 b = { 4, 5, 6 };
+        vec3 r = vec3_add(a, b);
+        assert_equal(5, r.x);
+        assert_equal(7, r.y);
+        assert_equal(9, r.z);
+    }
+
+    {
+        vec3 r = vec3_add(Vec3(1, 2, 3), Vec3(4, 5, 6));
+        assert_equal(5, r.x);
+        assert_equal(7, r.y);
+        assert_equal(9, r.z);
+    }
+
+    {
+        vec3 a = { 1, 2, 3 };
+        vec3 b = { 4, 5, 6 };
+        vec3 c = { 7, 8, 9 };
+        vec3 r = vec3_add(vec3_add(a, b), c);
+        assert_equal(12, r.x);
+        assert_equal(15, r.y);
+        assert_equal(18, r.z);
+    }
+
+    {
+        vec3 a = { 1, 2, 3 };
+        vec3 b = { 4, -5, 6 };
+        vec3 r = vec3_sub(a, b);
+        assert_equal(-3, r.x);
+        assert_equal(7, r.y);
+        assert_equal(-3, r.z);
+    }
+
+    {
+        vec3 a = { 1, 2, 3 };
+        vec3 r = vec3_scale(a, 2);
+        assert_equal(2, r.x);
+        assert_equal(4, r.y);
+        assert_equal(6, r.z);
+    }
+
+    {
+        vec3 a = { 1, 2, 3 };
+        vec3 b = { 4, 5, 6 };
+        float r = vec3_dot(a, b);
+        assert_equal(32, r);
+    }
+
+    {
+        vec3 a = { 3, 4, 5 };
+        float r = vec3_length(a);
+        assert_equal(sqrt(50), r);
+    }
+
+    {
+        vec3 a = { 1, 1, 1 };
+        vec3 b = { 4, 5, 6 };
+        float r = vec3_distance(a, b);
+        assert_equal(sqrt(50), r);
+    }
+
+    {
+        vec3 a = { 3, 4, 5 };
+        vec3 r = vec3_normalize(a);
+        assert_equal(3/sqrt(50), r.x);
+        assert_equal(4/sqrt(50), r.y);
+        assert_equal(5/sqrt(50), r.z);
+    }
+}
+
 static void test_mat2(void)
 {
     {
@@ -182,6 +256,7 @@ int main(int argc, char **argv)
     (void) argc;
     (void) argv;
     test_vec2();
+    test_vec3();
     test_mat2();
     return 0;
 }
