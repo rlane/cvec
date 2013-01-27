@@ -45,6 +45,23 @@ static inline void _assert_vec3_equal(vec3 expected, vec3 value, const char *fil
 
 #define assert_vec3_equal(expected, value) _assert_vec3_equal(expected, value, __FILE__, __LINE__)
 
+static inline void _assert_mat2_equal(const mat2 *expected, const mat2 *value, const char *file, int line)
+{
+    int i, j;
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++) {
+            double e = mat2_get(expected, i, j);
+            double v = mat2_get(value, i, j);
+            if (!approx_equal(e, v)) {
+                fprintf(stderr, "%s:%d expected %g, got %g at (%d, %d)\n", file, line, e, v, i, j);
+                abort();
+            }
+        }
+    }
+}
+
+#define assert_mat2_equal(expected, value) _assert_mat2_equal(expected, value, __FILE__, __LINE__)
+
 static inline void _assert_mat3_equal(const mat3 *expected, const mat3 *value, const char *file, int line)
 {
     int i, j;
@@ -201,40 +218,37 @@ static void test_vec3(void)
 static void test_mat2(void)
 {
     {
-        mat2 a[1];
+        mat2 a[1], t[1];
         mat2_init_zero(a);
-        assert_equal(0, mat2_get(a, 0, 0));
-        assert_equal(0, mat2_get(a, 0, 1));
-        assert_equal(0, mat2_get(a, 1, 0));
-        assert_equal(0, mat2_get(a, 1, 1));
+        mat2_init(t, 0, 0,
+                     0, 0);
+        assert_mat2_equal(t, a);
     }
 
     {
-        mat2 a[1];
+        mat2 a[1], t[1];
         mat2_init_identity(a);
-        assert_equal(1, mat2_get(a, 0, 0));
-        assert_equal(0, mat2_get(a, 0, 1));
-        assert_equal(0, mat2_get(a, 1, 0));
-        assert_equal(1, mat2_get(a, 1, 1));
+        mat2_init(t, 1, 0,
+                     0, 1);
+        assert_mat2_equal(t, a);
     }
 
     {
-        mat2 a[1];
+        mat2 a[1], t[1];
         mat2_init_scale(a, 2);
-        assert_equal(2, mat2_get(a, 0, 0));
-        assert_equal(0, mat2_get(a, 0, 1));
-        assert_equal(0, mat2_get(a, 1, 0));
-        assert_equal(2, mat2_get(a, 1, 1));
+        mat2_init(t, 2, 0,
+                     0, 2);
+        assert_mat2_equal(t, a);
     }
 
     {
-        mat2 a[1];
-        mat2_init_zero(a);
-        mat2_set(a, 1, 0, 1);
-        assert_equal(0, mat2_get(a, 0, 1));
+        mat2 a[1], t[1];
+        mat2_init(a, 1, 2,
+                     3, 4);
+        mat2_init(t, 1, 3,
+                     2, 4);
         mat2_transpose(a);
-        assert_equal(0, mat2_get(a, 1, 0));
-        assert_equal(1, mat2_get(a, 0, 1));
+        assert_mat2_equal(t, a);
     }
 
     {
@@ -255,27 +269,24 @@ static void test_mat2(void)
     }
 
     {
-        mat2 a[1], b[1], r[1];
+        mat2 a[1], b[1], r[1], t[1];
         mat2_init_identity(a);
         mat2_init_identity(b);
+        mat2_init_identity(t);
         mat2_mult(a, b, r);
-        assert_equal(1, mat2_get(r, 0, 0));
-        assert_equal(0, mat2_get(r, 0, 1));
-        assert_equal(0, mat2_get(r, 1, 0));
-        assert_equal(1, mat2_get(r, 1, 1));
+        assert_mat2_equal(t, r);
     }
 
     {
-        mat2 a[1], b[1], r[1];
+        mat2 a[1], b[1], r[1], t[1];
         mat2_init(a, 1, 2,
                      3, 4);
         mat2_init(b, 5, 6,
                      7, 8);
+        mat2_init(t, 1*5 + 2*7, 1*6 + 2*8,
+                     3*5 + 4*7, 3*6 + 4*8);
         mat2_mult(a, b, r);
-        assert_equal(1*5 + 2*7, mat2_get(r, 0, 0));
-        assert_equal(1*6 + 2*8, mat2_get(r, 0, 1));
-        assert_equal(3*5 + 4*7, mat2_get(r, 1, 0));
-        assert_equal(3*6 + 4*8, mat2_get(r, 1, 1));
+        assert_mat2_equal(t, r);
     }
 
     {
