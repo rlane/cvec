@@ -126,17 +126,19 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
+        vec2 r;
         mat2_init_identity(a);
-        vec2 r = mat2_transform(a, Vec2(2, 3));
+        r = mat2_transform(a, Vec2(2, 3));
         assert_equal(2, r.x);
         assert_equal(3, r.y);
     }
 
     {
         mat2 a[1];
+        vec2 r;
         mat2_init(a, 5, 6,
                      7, 8);
-        vec2 r = mat2_transform(a, Vec2(2, 3));
+        r = mat2_transform(a, Vec2(2, 3));
         assert_equal(2*5 + 3*6, r.x);
         assert_equal(2*7 + 3*8, r.y);
     }
@@ -167,8 +169,9 @@ static void test_mat2(void)
 
     {
         mat2 a[1];
+        vec2 r;
         mat2_init_rotate(a, M_PI/2);
-        vec2 r = mat2_transform(a, Vec2(2, 3));
+        r = mat2_transform(a, Vec2(2, 3));
         assert_equal(-3, r.x);
         assert_equal(2, r.y);
     }
@@ -176,6 +179,8 @@ static void test_mat2(void)
 
 int main(int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
     test_vec2();
     test_mat2();
     return 0;

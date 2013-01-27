@@ -48,7 +48,9 @@ typedef struct mat2 {
 
 static inline vec2 Vec2(float x, float y)
 {
-    vec2 r = { x, y };
+    vec2 r;
+    r.x = x;
+    r.y = y;
     return r;
 }
 
