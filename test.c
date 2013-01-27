@@ -234,6 +234,15 @@ static void test_mat2(void)
         mat2 a[1];
         vec2 r;
         mat2_init_rotate(a, M_PI/2);
+
+        assert_equal(1, vec2_length(mat2_row(a, 0)));
+        assert_equal(1, vec2_length(mat2_row(a, 1)));
+        assert_equal(1, vec2_length(mat2_col(a, 0)));
+        assert_equal(1, vec2_length(mat2_col(a, 1)));
+
+        assert_equal(0, vec2_dot(mat2_row(a, 0), mat2_row(a, 1)));
+        assert_equal(0, vec2_dot(mat2_col(a, 0), mat2_col(a, 1)));
+
         r = mat2_transform(a, Vec2(2, 3));
         assert_vec2_equal(Vec2(-3, 2), r);
     }
