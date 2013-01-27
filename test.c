@@ -145,6 +145,20 @@ static void test_vec3(void)
 static void test_mat2(void)
 {
     {
+        mat2 a[1];
+        mat2_init(a, 1, 2,
+                     3, 4);
+        assert_equal(1, mat2_get(a, 0, 0));
+        assert_equal(2, mat2_get(a, 0, 1));
+        assert_equal(3, mat2_get(a, 1, 0));
+        assert_equal(4, mat2_get(a, 1, 1));
+        assert_vec2_equal(Vec2(1, 2), mat2_row(a, 0));
+        assert_vec2_equal(Vec2(3, 4), mat2_row(a, 1));
+        assert_vec2_equal(Vec2(1, 3), mat2_col(a, 0));
+        assert_vec2_equal(Vec2(2, 4), mat2_col(a, 1));
+    }
+
+    {
         mat2 a[1], t[1];
         mat2_init_zero(a);
         mat2_init(t, 0, 0,

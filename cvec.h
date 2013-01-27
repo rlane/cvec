@@ -262,6 +262,16 @@ static inline void mat2_set(mat2 *a, int i, int j, float value)
     mat_set(a->data, i, j, value, 2);
 }
 
+static inline vec2 mat2_row(const mat2 *a, int i)
+{
+    return Vec2(mat2_get(a, i, 0), mat2_get(a, i, 1));
+}
+
+static inline vec2 mat2_col(const mat2 *a, int j)
+{
+    return Vec2(mat2_get(a, 0, j), mat2_get(a, 1, j));
+}
+
 static inline void mat2_init(mat2 *a, float v00, float v01, float v10, float v11)
 {
     mat2_set(a, 0, 0, v00);
