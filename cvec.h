@@ -31,7 +31,7 @@
  * matrix functions have their normal meanings: row i and column j.
  *
  * Angles are specified in radians. Rotation matrices produced by
- * mat_*init_rotate() are right-handed.
+ * mat*_init_rotate() are right-handed.
  */
 
 #include <math.h>
