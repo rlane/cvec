@@ -1,4 +1,4 @@
-CFLAGS = -g -O3 -fstrict-aliasing -Wall -Wextra -Werror -pedantic
+CFLAGS = -g -O3 -std=c99 -fstrict-aliasing -Wall -Wextra -Werror -pedantic
 LIBS = -lm
 
 all: test

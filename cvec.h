@@ -33,6 +33,11 @@
 
 #include <math.h>
 
+#ifndef M_PI
+/* C99 removed M_PI */
+#define M_PI 3.14159265358979323846264338327
+#endif
+
 /* types */
 
 typedef struct vec2 {
