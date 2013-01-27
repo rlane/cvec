@@ -7,15 +7,37 @@
 
 static const double epsilon = 1.0e-3;
 
+static inline bool approx_equal(double a, double b)
+{
+    return fabs(a - b) <= epsilon;
+}
+
 #define assert_equal(_expected, _value) \
     do { \
         double expected = (_expected); \
         double value = (_value); \
-        if (fabs(expected - value) > epsilon) { \
+        if (!approx_equal(expected, value)) { \
             fprintf(stderr, "%s:%d expected %g, got %g\n", __FILE__, __LINE__, expected, value); \
             abort(); \
         } \
     } while (0)
+
+static inline void _assert_mat3_equal(const mat3 *expected, const mat3 *value, const char *file, int line)
+{
+    int i, j;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            double e = mat3_get(expected, i, j);
+            double v = mat3_get(value, i, j);
+            if (!approx_equal(e, v)) {
+                fprintf(stderr, "%s:%d expected %g, got %g at (%d, %d)\n", file, line, e, v, i, j);
+                abort();
+            }
+        }
+    }
+}
+
+#define assert_mat3_equal(expected, value) _assert_mat3_equal(expected, value, __FILE__, __LINE__)
 
 static void test_vec2(void)
 {
@@ -251,6 +273,165 @@ static void test_mat2(void)
     }
 }
 
+static void test_mat3(void)
+{
+    {
+        mat3 a[1];
+        mat3_init(a, 1, 2, 3,
+                     4, 5, 6,
+                     7, 8, 9);
+        assert_equal(1, mat3_get(a, 0, 0));
+        assert_equal(2, mat3_get(a, 0, 1));
+        assert_equal(3, mat3_get(a, 0, 2));
+        assert_equal(4, mat3_get(a, 1, 0));
+        assert_equal(5, mat3_get(a, 1, 1));
+        assert_equal(6, mat3_get(a, 1, 2));
+        assert_equal(7, mat3_get(a, 2, 0));
+        assert_equal(8, mat3_get(a, 2, 1));
+        assert_equal(9, mat3_get(a, 2, 2));
+    }
+
+    {
+        mat3 a[1], t[1];
+        mat3_init_zero(a);
+        mat3_init(t, 0, 0, 0,
+                     0, 0, 0,
+                     0, 0, 0);
+        assert_mat3_equal(t, a);
+    }
+
+    {
+        mat3 a[1], t[1];
+        mat3_init_identity(a);
+        mat3_init(t, 1, 0, 0,
+                     0, 1, 0,
+                     0, 0, 1);
+        assert_mat3_equal(t, a);
+    }
+
+    {
+        mat3 a[1], t[1];
+        mat3_init_scale(a, 2);
+        mat3_init(t, 2, 0, 0,
+                     0, 2, 0,
+                     0, 0, 2);
+        assert_mat3_equal(t, a);
+    }
+
+    {
+        mat3 a[1], t[1];
+        mat3_init(a, 1, 2, 3,
+                     4, 5, 6,
+                     7, 8, 9);
+        mat3_init(t, 1, 4, 7,
+                     2, 5, 8,
+                     3, 6, 9);
+        mat3_transpose(a);
+        assert_mat3_equal(t, a);
+    }
+
+    {
+        mat3 a[1];
+        vec3 r;
+        mat3_init_identity(a);
+        r = mat3_transform(a, Vec3(2, 3, 4));
+        assert_equal(2, r.x);
+        assert_equal(3, r.y);
+        assert_equal(4, r.z);
+    }
+
+    {
+        mat3 a[1];
+        vec3 r;
+        mat3_init(a,  5,  6,  7,
+                      8,  9, 10,
+                     11, 12, 13);
+        r = mat3_transform(a, Vec3(2, 3, 4));
+        assert_equal(2*5 + 3*6 + 4*7, r.x);
+        assert_equal(2*8 + 3*9 + 4*10, r.y);
+        assert_equal(2*11 + 3*12 + 4*13, r.z);
+    }
+
+    {
+        mat3 a[1], b[1], r[1], t[1];
+        mat3_init_identity(a);
+        mat3_init_identity(b);
+        mat3_init_identity(t);
+        mat3_mult(a, b, r);
+        assert_mat3_equal(t, r);
+    }
+
+    {
+        mat3 a[1], b[1], r[1], t[1];
+        mat3_init(a, 1, 2, 3,
+                     4, 5, 6,
+                     7, 8, 9);
+        mat3_init(b, 10, 11, 12,
+                     13, 14, 15,
+                     16, 17, 18);
+        mat3_init(t,  84,  90,  96,
+                     201, 216, 231,
+                     318, 342, 366);
+        mat3_mult(a, b, r);
+        assert_mat3_equal(t, r);
+    }
+
+    {
+        mat3 a[1], b[1], c[1], identity[1];
+        mat3_init_rotate(a, Vec3(2, 3, 4), M_PI/6);
+
+        assert_equal(1, vec3_length(mat3_row(a, 0)));
+        assert_equal(1, vec3_length(mat3_row(a, 1)));
+        assert_equal(1, vec3_length(mat3_row(a, 2)));
+        assert_equal(1, vec3_length(mat3_col(a, 0)));
+        assert_equal(1, vec3_length(mat3_col(a, 1)));
+        assert_equal(1, vec3_length(mat3_col(a, 2)));
+
+        assert_equal(0, vec3_dot(mat3_row(a, 0), mat3_row(a, 1)));
+        assert_equal(0, vec3_dot(mat3_row(a, 0), mat3_row(a, 2)));
+        assert_equal(0, vec3_dot(mat3_row(a, 1), mat3_row(a, 2)));
+        assert_equal(0, vec3_dot(mat3_col(a, 0), mat3_col(a, 1)));
+        assert_equal(0, vec3_dot(mat3_col(a, 0), mat3_col(a, 2)));
+        assert_equal(0, vec3_dot(mat3_col(a, 1), mat3_col(a, 2)));
+
+        mat3_init_rotate(b, Vec3(2, 3, 4), M_PI/6);
+        mat3_init_identity(identity);
+        mat3_transpose(b);
+        mat3_mult(a, b, c);
+        assert_mat3_equal(c, identity);
+    }
+
+    {
+        mat3 a[1];
+        vec3 r;
+        mat3_init_rotate(a, Vec3(0, 0, 1), M_PI/2);
+        r = mat3_transform(a, Vec3(2,3,4));
+        assert_equal(-3, r.x);
+        assert_equal(2, r.y);
+        assert_equal(4, r.z);
+    }
+
+    {
+        mat3 a[1];
+        vec3 r;
+        mat3_init_rotate(a, Vec3(0, 1, 0), M_PI/2);
+        r = mat3_transform(a, Vec3(2,3,4));
+        assert_equal(4, r.x);
+        assert_equal(3, r.y);
+        assert_equal(-2, r.z);
+    }
+
+    {
+        mat3 a[1];
+        vec3 r;
+        mat3_init_rotate(a, Vec3(1, 0, 0), M_PI/2);
+        r = mat3_transform(a, Vec3(2,3,4));
+        assert_equal(2, r.x);
+        assert_equal(-4, r.y);
+        assert_equal(3, r.z);
+    }
+}
+
 int main(int argc, char **argv)
 {
     (void) argc;
@@ -258,5 +439,6 @@ int main(int argc, char **argv)
     test_vec2();
     test_vec3();
     test_mat2();
+    test_mat3();
     return 0;
 }

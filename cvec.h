@@ -29,6 +29,9 @@
  *
  * Matrices are stored in column-major order. The parameters i, j used in
  * matrix functions have their normal meanings: row i and column j.
+ *
+ * Angles are specified in radians. Rotation matrices produced by
+ * mat_*init_rotate() are right-handed.
  */
 
 #include <math.h>
@@ -54,6 +57,10 @@ typedef struct vec3 {
 typedef struct mat2 {
     float data[4];
 } mat2;
+
+typedef struct mat3 {
+    float data[9];
+} mat3;
 
 
 /* vec2 functions */
@@ -299,6 +306,97 @@ static inline vec2 mat2_transform(const mat2 *m, vec2 v)
 static inline void mat2_mult(const mat2 *a, const mat2 *b, mat2 *r)
 {
     mat_mult(a->data, b->data, r->data, 2);
+}
+
+
+/* mat3 functions */
+
+static inline float mat3_get(const mat3 *a, int i, int j)
+{
+    return mat_get(a->data, i, j, 3);
+}
+
+static inline void mat3_set(mat3 *a, int i, int j, float value)
+{
+    mat_set(a->data, i, j, value, 3);
+}
+
+static inline vec3 mat3_row(const mat3 *a, int i)
+{
+    return Vec3(mat3_get(a, i, 0), mat3_get(a, i, 1), mat3_get(a, i, 2));
+}
+
+static inline vec3 mat3_col(const mat3 *a, int j)
+{
+    return Vec3(mat3_get(a, 0, j), mat3_get(a, 1, j), mat3_get(a, 2, j));
+}
+
+static inline void mat3_init(mat3 *a, float v00, float v01, float v02,
+                                      float v10, float v11, float v12,
+                                      float v20, float v21, float v22)
+{
+    mat3_set(a, 0, 0, v00);
+    mat3_set(a, 0, 1, v01);
+    mat3_set(a, 0, 2, v02);
+    mat3_set(a, 1, 0, v10);
+    mat3_set(a, 1, 1, v11);
+    mat3_set(a, 1, 2, v12);
+    mat3_set(a, 2, 0, v20);
+    mat3_set(a, 2, 1, v21);
+    mat3_set(a, 2, 2, v22);
+}
+
+static inline void mat3_init_zero(mat3 *a)
+{
+    mat_init_zero(a->data, 3);
+}
+
+static inline void mat3_init_identity(mat3 *a)
+{
+    mat_init_identity(a->data, 3);
+}
+
+static inline void mat3_init_scale(mat3 *a, float value)
+{
+    mat_init_scale(a->data, value, 3);
+}
+
+static inline void mat3_init_rotate(mat3 *a, vec3 axis, float angle)
+{
+    if (vec3_length(axis) == 0) {
+        mat3_init_identity(a);
+        return;
+    }
+
+    axis = vec3_normalize(axis);
+
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+    float s = sinf(angle);
+    float c = cosf(angle);
+    float t = 1.0f - c;
+
+    mat3_init(a, t*x*x + c,   t*y*x - s*z, t*z*x + s*y,
+                 t*x*y + s*z, t*y*y + c,   t*z*y - s*x,
+                 t*x*z - s*y, t*y*z + s*x, t*z*z + c);
+}
+
+static inline void mat3_transpose(mat3 *a)
+{
+    mat_transpose(a->data, 3);
+}
+
+static inline vec3 mat3_transform(const mat3 *m, vec3 v)
+{
+    vec3 r;
+    mat_transform(m->data, (float *)&v, (float *)&r, 3);
+    return r;
+}
+
+static inline void mat3_mult(const mat3 *a, const mat3 *b, mat3 *r)
+{
+    mat_mult(a->data, b->data, r->data, 3);
 }
 
 #endif
