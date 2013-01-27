@@ -1,4 +1,4 @@
-A lightweight vector library in C. Supports 2 dimensional float vectors.
+A lightweight vector library in C. MIT licensed. Supports 2 dimensional float vectors.
 
 TODO
 ----
