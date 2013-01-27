@@ -3,7 +3,7 @@ LIBS = -lm
 
 all: test
 
-test: test.c cvec.h
+test: test.c cvec.h cvec_asserts.h
 	$(CC) $(CFLAGS) $< $(LIBS) -o $@
 
 check: test
