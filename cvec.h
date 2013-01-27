@@ -23,6 +23,14 @@
 #ifndef CVEC_H
 #define CVEC_H
 
+/*
+ * Vectors are passed and returned by value while matrices are passed by
+ * reference.
+ *
+ * Matrices are stored in column-major order. The parameters i, j used in
+ * matrix functions have their normal meanings: row i and column j.
+ */
+
 #include <math.h>
 
 /* types */
@@ -32,6 +40,9 @@ typedef struct vec2 {
     float y;
 } vec2;
 
+typedef struct mat2 {
+    float data[4];
+} mat2;
 
 /* vec2 functions */
 
@@ -75,6 +86,157 @@ static inline vec2 vec2_normalize(vec2 a)
 {
     float len = vec2_length(a);
     return Vec2(a.x/len, a.y/len);
+}
+
+
+/* 
+ * Generic (square) matrix functions
+ *
+ * The compiler is expected to inline these into the caller and
+ * optimize away the generic loops. Once the library is stable
+ * we could inline and optimize them by hand to save the
+ * compiler some work.
+ */
+
+
+static inline float mat_get(float *a, int i, int j, int n)
+{
+    return a[i + n*j];
+}
+
+static inline void mat_set(float *a, int i, int j, float value, int n)
+{
+    a[i + n*j] = value;
+}
+
+static inline void mat_zero(float *a, int n)
+{
+    int i;
+    for (i = 0; i < n*n; i++) {
+        a[i] = 0.0f;
+    }
+}
+
+static inline void mat_identity(float *a, int n)
+{
+    int i, j;
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < n; i++) {
+            float value = i == j ? 1.0f : 0.0f;
+            mat_set(a, i, j, value, n);
+        }
+    }
+}
+
+static inline void mat_scaling(float *a, float value, int n)
+{
+    int i, j;
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < n; i++) {
+            float _value = i == j ? value : 0.0f;
+            mat_set(a, i, j, _value, n);
+        }
+    }
+}
+
+static inline void mat_transpose(float *a, int n)
+{
+    int i, j;
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < n; i++) {
+            if (i < j) {
+                float value1 = mat_get(a, i, j, n);
+                float value2 = mat_get(a, j, i, n);
+                mat_set(a, i, j, value2, n);
+                mat_set(a, j, i, value1, n);
+            }
+        }
+    }
+}
+
+static inline void mat_transform(float *m, float *v, float *r, int n)
+{
+    int i, j;
+    for (i = 0; i < n; i++) {
+        float sum = 0.0f;
+        for (j = 0; j < n; j++) {
+            sum += v[j] * mat_get(m, i, j, n);
+        }
+        r[i] = sum;
+    }
+}
+
+static inline void mat_mult(float *a, float *b, float *r, int n)
+{
+    int i, j, k;
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < n; i++) {
+            float sum = 0.0f;
+            for (k = 0; k < n; k++) {
+                sum += mat_get(a, i, k, n) * mat_get(b, k, j, n);
+            }
+            mat_set(r, i, j, sum, n);
+        }
+    }
+}
+
+
+/* mat2 functions */
+
+static inline float mat2_get(mat2 *a, int i, int j)
+{
+    return mat_get(a->data, i, j, 2);
+}
+
+static inline void mat2_set(mat2 *a, int i, int j, float value)
+{
+    mat_set(a->data, i, j, value, 2);
+}
+
+static inline void mat2_init(mat2 *a, float v00, float v01, float v10, float v11)
+{
+    mat2_set(a, 0, 0, v00);
+    mat2_set(a, 0, 1, v01);
+    mat2_set(a, 1, 0, v10);
+    mat2_set(a, 1, 1, v11);
+}
+
+static inline void mat2_zero(mat2 *a)
+{
+    mat_zero(a->data, 2);
+}
+
+static inline void mat2_identity(mat2 *a)
+{
+    mat_identity(a->data, 2);
+}
+
+static inline void mat2_scaling(mat2 *a, float value)
+{
+    mat_scaling(a->data, value, 2);
+}
+
+static inline void mat2_rotation(mat2 *a, float radians)
+{
+    mat2_init(a, cos(radians), -sin(radians),
+                 sin(radians), cos(radians));
+}
+
+static inline void mat2_transpose(mat2 *a)
+{
+    mat_transpose(a->data, 2);
+}
+
+static inline vec2 mat2_transform(mat2 *m, vec2 v)
+{
+    vec2 r;
+    mat_transform(m->data, (float *)&v, (float *)&r, 2);
+    return r;
+}
+
+static inline void mat2_mult(mat2 *a, mat2 *b, mat2 *r)
+{
+    mat_mult(a->data, b->data, r->data, 2);
 }
 
 #endif

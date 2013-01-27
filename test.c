@@ -85,8 +85,98 @@ static void test_vec2(void)
     }
 }
 
+static void test_mat2(void)
+{
+    {
+        mat2 a[1];
+        mat2_zero(a);
+        assert_equal(0, mat2_get(a, 0, 0));
+        assert_equal(0, mat2_get(a, 0, 1));
+        assert_equal(0, mat2_get(a, 1, 0));
+        assert_equal(0, mat2_get(a, 1, 1));
+    }
+
+    {
+        mat2 a[1];
+        mat2_identity(a);
+        assert_equal(1, mat2_get(a, 0, 0));
+        assert_equal(0, mat2_get(a, 0, 1));
+        assert_equal(0, mat2_get(a, 1, 0));
+        assert_equal(1, mat2_get(a, 1, 1));
+    }
+
+    {
+        mat2 a[1];
+        mat2_scaling(a, 2);
+        assert_equal(2, mat2_get(a, 0, 0));
+        assert_equal(0, mat2_get(a, 0, 1));
+        assert_equal(0, mat2_get(a, 1, 0));
+        assert_equal(2, mat2_get(a, 1, 1));
+    }
+
+    {
+        mat2 a[1];
+        mat2_zero(a);
+        mat2_set(a, 1, 0, 1);
+        assert_equal(0, mat2_get(a, 0, 1));
+        mat2_transpose(a);
+        assert_equal(0, mat2_get(a, 1, 0));
+        assert_equal(1, mat2_get(a, 0, 1));
+    }
+
+    {
+        mat2 a[1];
+        mat2_identity(a);
+        vec2 r = mat2_transform(a, Vec2(2, 3));
+        assert_equal(2, r.x);
+        assert_equal(3, r.y);
+    }
+
+    {
+        mat2 a[1];
+        mat2_init(a, 5, 6,
+                     7, 8);
+        vec2 r = mat2_transform(a, Vec2(2, 3));
+        assert_equal(2*5 + 3*6, r.x);
+        assert_equal(2*7 + 3*8, r.y);
+    }
+
+    {
+        mat2 a[1], b[1], r[1];
+        mat2_identity(a);
+        mat2_identity(b);
+        mat2_mult(a, b, r);
+        assert_equal(1, mat2_get(r, 0, 0));
+        assert_equal(0, mat2_get(r, 0, 1));
+        assert_equal(0, mat2_get(r, 1, 0));
+        assert_equal(1, mat2_get(r, 1, 1));
+    }
+
+    {
+        mat2 a[1], b[1], r[1];
+        mat2_init(a, 1, 2,
+                     3, 4);
+        mat2_init(b, 5, 6,
+                     7, 8);
+        mat2_mult(a, b, r);
+        assert_equal(1*5 + 2*7, mat2_get(r, 0, 0));
+        assert_equal(1*6 + 2*8, mat2_get(r, 0, 1));
+        assert_equal(3*5 + 4*7, mat2_get(r, 1, 0));
+        assert_equal(3*6 + 4*8, mat2_get(r, 1, 1));
+    }
+
+    {
+        mat2 a[1];
+        mat2_rotation(a, M_PI/2);
+        vec2 r = mat2_transform(a, Vec2(2, 3));
+        assert_equal(-3, r.x);
+        assert_equal(2, r.y);
+    }
+}
+
 int main(int argc, char **argv)
 {
     test_vec2();
+    test_mat2();
     return 0;
 }
