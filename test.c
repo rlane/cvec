@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const double epsilon = 1.0e-3;
+static const double epsilon = 1.0e-6;
 
 static inline bool approx_equal(double a, double b)
 {
@@ -398,7 +398,7 @@ static void test_mat3(void)
         mat3_init_identity(identity);
         mat3_transpose(b);
         mat3_mult(a, b, c);
-        assert_mat3_equal(c, identity);
+        assert_mat3_equal(identity, c);
     }
 
     {
