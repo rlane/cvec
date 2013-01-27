@@ -99,7 +99,7 @@ static inline vec2 vec2_normalize(vec2 a)
  */
 
 
-static inline float mat_get(float *a, int i, int j, int n)
+static inline float mat_get(const float *a, int i, int j, int n)
 {
     return a[i + n*j];
 }
@@ -154,7 +154,7 @@ static inline void mat_transpose(float *a, int n)
     }
 }
 
-static inline void mat_transform(float *m, float *v, float *r, int n)
+static inline void mat_transform(const float *m, const float *v, float *r, int n)
 {
     int i, j;
     for (i = 0; i < n; i++) {
@@ -166,7 +166,7 @@ static inline void mat_transform(float *m, float *v, float *r, int n)
     }
 }
 
-static inline void mat_mult(float *a, float *b, float *r, int n)
+static inline void mat_mult(const float *a, const float *b, float *r, int n)
 {
     int i, j, k;
     for (j = 0; j < n; j++) {
@@ -183,7 +183,7 @@ static inline void mat_mult(float *a, float *b, float *r, int n)
 
 /* mat2 functions */
 
-static inline float mat2_get(mat2 *a, int i, int j)
+static inline float mat2_get(const mat2 *a, int i, int j)
 {
     return mat_get(a->data, i, j, 2);
 }
@@ -227,14 +227,14 @@ static inline void mat2_transpose(mat2 *a)
     mat_transpose(a->data, 2);
 }
 
-static inline vec2 mat2_transform(mat2 *m, vec2 v)
+static inline vec2 mat2_transform(const mat2 *m, vec2 v)
 {
     vec2 r;
     mat_transform(m->data, (float *)&v, (float *)&r, 2);
     return r;
 }
 
-static inline void mat2_mult(mat2 *a, mat2 *b, mat2 *r)
+static inline void mat2_mult(const mat2 *a, const mat2 *b, mat2 *r)
 {
     mat_mult(a->data, b->data, r->data, 2);
 }
