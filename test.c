@@ -470,6 +470,81 @@ static void test_mat3(void)
     }
 }
 
+static void test_mat4(void)
+{
+    {
+        mat4 a[1];
+        mat4_init(a, 1, 2, 3, 4,
+                     5, 6, 7, 8,
+                     9, 10, 11, 12,
+                     13, 14, 15, 16);
+        assert_equal(1, mat4_get(a, 0, 0));
+        assert_equal(2, mat4_get(a, 0, 1));
+        assert_equal(3, mat4_get(a, 0, 2));
+        assert_equal(4, mat4_get(a, 0, 3));
+        assert_equal(5, mat4_get(a, 1, 0));
+        assert_equal(6, mat4_get(a, 1, 1));
+        assert_equal(7, mat4_get(a, 1, 2));
+        assert_equal(8, mat4_get(a, 1, 3));
+        assert_equal(9, mat4_get(a, 2, 0));
+        assert_equal(10, mat4_get(a, 2, 1));
+        assert_equal(11, mat4_get(a, 2, 2));
+        assert_equal(12, mat4_get(a, 2, 3));
+        assert_equal(13, mat4_get(a, 3, 0));
+        assert_equal(14, mat4_get(a, 3, 1));
+        assert_equal(15, mat4_get(a, 3, 2));
+        assert_equal(16, mat4_get(a, 3, 3));
+        assert_vec4_equal(Vec4( 1,  2,  3,  4), mat4_row(a, 0));
+        assert_vec4_equal(Vec4( 5,  6,  7,  8), mat4_row(a, 1));
+        assert_vec4_equal(Vec4( 9, 10, 11, 12), mat4_row(a, 2));
+        assert_vec4_equal(Vec4(13, 14, 15, 16), mat4_row(a, 3));
+        assert_vec4_equal(Vec4(1, 5,  9, 13), mat4_col(a, 0));
+        assert_vec4_equal(Vec4(2, 6, 10, 14), mat4_col(a, 1));
+        assert_vec4_equal(Vec4(3, 7, 11, 15), mat4_col(a, 2));
+        assert_vec4_equal(Vec4(4, 8, 12, 16), mat4_col(a, 3));
+    }
+
+    {
+        mat4 a[1];
+        vec4 r;
+        mat4_init_scale(a, 2);
+        r = mat4_transform(a, Vec4(2, 3, 4, 1));
+        assert_vec4_equal(Vec4(4, 6, 8, 1), r);
+    }
+
+    {
+        mat4 a[1];
+        vec4 r;
+        mat4_init_rotate(a, Vec3(0, 0, 1), M_PI/2);
+        r = mat4_transform(a, Vec4(2, 3, 4, 1));
+        assert_vec4_equal(Vec4(-3, 2, 4, 1), r);
+    }
+
+    {
+        mat4 a[1];
+        vec4 r;
+        mat4_init_rotate(a, Vec3(0, 1, 0), M_PI/2);
+        r = mat4_transform(a, Vec4(2, 3, 4, 1));
+        assert_vec4_equal(Vec4(4, 3, -2, 1), r);
+    }
+
+    {
+        mat4 a[1];
+        vec4 r;
+        mat4_init_rotate(a, Vec3(1, 0, 0), M_PI/2);
+        r = mat4_transform(a, Vec4(2, 3, 4, 1));
+        assert_vec4_equal(Vec4(2, -4, 3, 1), r);
+    }
+
+    {
+        mat4 a[1];
+        vec4 r;
+        mat4_init_translate(a, Vec3(10, 20, 30));
+        r = mat4_transform(a, Vec4(2, 3, 4, 1));
+        assert_vec4_equal(Vec4(12, 23, 34, 1), r);
+    }
+}
+
 int main(int argc, char **argv)
 {
     (void) argc;
@@ -479,5 +554,6 @@ int main(int argc, char **argv)
     test_vec4();
     test_mat2();
     test_mat3();
+    test_mat4();
     return 0;
 }

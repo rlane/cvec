@@ -32,6 +32,9 @@
  *
  * Angles are specified in radians. Rotation matrices produced by
  * mat*_init_rotate() are right-handed.
+ *
+ * The mat4 translate/rotate/scale functions are intended to be used with
+ * homogeneous coordinates.
  */
 
 #include <math.h>
@@ -68,6 +71,10 @@ typedef struct mat2 {
 typedef struct mat3 {
     float data[9];
 } mat3;
+
+typedef struct mat4 {
+    float data[16];
+} mat4;
 
 
 /* vec2 functions */
@@ -463,6 +470,116 @@ static inline vec3 mat3_transform(const mat3 *m, vec3 v)
 static inline void mat3_mult(const mat3 *a, const mat3 *b, mat3 *r)
 {
     mat_mult(a->data, b->data, r->data, 3);
+}
+
+
+/* mat4 functions */
+
+static inline float mat4_get(const mat4 *a, int i, int j)
+{
+    return mat_get(a->data, i, j, 4);
+}
+
+static inline void mat4_set(mat4 *a, int i, int j, float value)
+{
+    mat_set(a->data, i, j, value, 4);
+}
+
+static inline vec4 mat4_row(const mat4 *a, int i)
+{
+    return Vec4(mat4_get(a, i, 0), mat4_get(a, i, 1), mat4_get(a, i, 2), mat4_get(a, i, 3));
+}
+
+static inline vec4 mat4_col(const mat4 *a, int j)
+{
+    return Vec4(mat4_get(a, 0, j), mat4_get(a, 1, j), mat4_get(a, 2, j), mat4_get(a, 3, j));
+}
+
+static inline void mat4_init(mat4 *a, float v00, float v01, float v02, float v03,
+                                      float v10, float v11, float v12, float v13,
+                                      float v20, float v21, float v22, float v23,
+                                      float v30, float v31, float v32, float v33)
+{
+    mat4_set(a, 0, 0, v00);
+    mat4_set(a, 0, 1, v01);
+    mat4_set(a, 0, 2, v02);
+    mat4_set(a, 0, 3, v03);
+    mat4_set(a, 1, 0, v10);
+    mat4_set(a, 1, 1, v11);
+    mat4_set(a, 1, 2, v12);
+    mat4_set(a, 1, 3, v13);
+    mat4_set(a, 2, 0, v20);
+    mat4_set(a, 2, 1, v21);
+    mat4_set(a, 2, 2, v22);
+    mat4_set(a, 2, 3, v23);
+    mat4_set(a, 3, 0, v30);
+    mat4_set(a, 3, 1, v31);
+    mat4_set(a, 3, 2, v32);
+    mat4_set(a, 3, 3, v33);
+}
+
+static inline void mat4_init_zero(mat4 *a)
+{
+    mat_init_zero(a->data, 4);
+}
+
+static inline void mat4_init_identity(mat4 *a)
+{
+    mat_init_identity(a->data, 4);
+}
+
+static inline void mat4_init_scale(mat4 *a, float value)
+{
+    mat_init_scale(a->data, value, 4);
+    mat4_set(a, 3, 3, 1);
+}
+
+/* Only supports rotation in 3 dimensions, not 4. */
+static inline void mat4_init_rotate(mat4 *a, vec3 axis, float angle)
+{
+    if (vec3_length(axis) == 0) {
+        mat4_init_identity(a);
+        return;
+    }
+
+    axis = vec3_normalize(axis);
+
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+    float s = sinf(angle);
+    float c = cosf(angle);
+    float t = 1.0f - c;
+
+    mat4_init(a, t*x*x + c,   t*y*x - s*z, t*z*x + s*y, 0,
+                 t*x*y + s*z, t*y*y + c,   t*z*y - s*x, 0,
+                 t*x*z - s*y, t*y*z + s*x, t*z*z + c,   0,
+                 0,           0,           0,           1);
+}
+
+static inline void mat4_init_translate(mat4 *m, vec3 v)
+{
+    mat4_init(m, 1, 0, 0, v.x,
+                 0, 1, 0, v.y,
+                 0, 0, 1, v.z,
+                 0, 0, 0, 1);
+}
+
+static inline void mat4_transpose(mat4 *a)
+{
+    mat_transpose(a->data, 4);
+}
+
+static inline vec4 mat4_transform(const mat4 *m, vec4 v)
+{
+    vec4 r;
+    mat_transform(m->data, (float *)&v, (float *)&r, 4);
+    return r;
+}
+
+static inline void mat4_mult(const mat4 *a, const mat4 *b, mat4 *r)
+{
+    mat_mult(a->data, b->data, r->data, 4);
 }
 
 #endif
