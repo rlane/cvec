@@ -142,6 +142,71 @@ static void test_vec3(void)
     }
 }
 
+static void test_vec4(void)
+{
+    {
+        vec4 a = { 1, 2, 3, 4 };
+        vec4 b = { 5, 6, 7, 8 };
+        vec4 r = vec4_add(a, b);
+        assert_vec4_equal(Vec4(6, 8, 10, 12), r);
+    }
+
+    {
+        vec4 r = vec4_add(Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8));
+        assert_vec4_equal(Vec4(6, 8, 10, 12), r);
+    }
+
+    {
+        vec4 a = { 1, 2, 3, 4 };
+        vec4 b = { 5, 6, 7, 8 };
+        vec4 c = { 9, 10, 11, 12 };
+        vec4 r = vec4_add(vec4_add(a, b), c);
+        assert_vec4_equal(Vec4(15, 18, 21, 24), r);
+    }
+
+    {
+        vec4 a = { 1, 2, 3, 4 };
+        vec4 b = { 5, -6, 7, -8 };
+        vec4 r = vec4_sub(a, b);
+        assert_vec4_equal(Vec4(-4, 8, -4, 12), r);
+    }
+
+    {
+        vec4 a = { 1, 2, 3, 4 };
+        vec4 r = vec4_scale(a, 2);
+        assert_vec4_equal(Vec4(2, 4, 6, 8), r);
+    }
+
+    {
+        vec4 a = { 1, 2, 3, 4 };
+        vec4 b = { 5, 6, 7, 8 };
+        float r = vec4_dot(a, b);
+        assert_equal(1*5 + 2*6 + 3*7 + 4*8, r);
+    }
+
+    {
+        vec4 a = { 3, 4, 5, 6 };
+        float r = vec4_length(a);
+        assert_equal(sqrt(86), r);
+    }
+
+    {
+        vec4 a = { 1, 1, 1, 1 };
+        vec4 b = { 4, 5, 6, 7 };
+        float r = vec4_distance(a, b);
+        assert_equal(sqrt(86), r);
+    }
+
+    {
+        vec4 a = { 3, 4, 5, 6 };
+        vec4 r = vec4_normalize(a);
+        assert_equal(3/sqrt(86), r.x);
+        assert_equal(4/sqrt(86), r.y);
+        assert_equal(5/sqrt(86), r.z);
+        assert_equal(6/sqrt(86), r.w);
+    }
+}
+
 static void test_mat2(void)
 {
     {
@@ -411,6 +476,7 @@ int main(int argc, char **argv)
     (void) argv;
     test_vec2();
     test_vec3();
+    test_vec4();
     test_mat2();
     test_mat3();
     return 0;

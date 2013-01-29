@@ -44,6 +44,19 @@ static inline void _assert_vec3_equal(vec3 expected, vec3 value, const char *fil
 
 #define assert_vec3_equal(expected, value) _assert_vec3_equal(expected, value, __FILE__, __LINE__)
 
+static inline void _assert_vec4_equal(vec4 expected, vec4 value, const char *file, int line)
+{
+    if (!approx_equal(expected.x, value.x) ||
+        !approx_equal(expected.y, value.y) ||
+        !approx_equal(expected.z, value.z) ||
+        !approx_equal(expected.w, value.w)) {
+        fprintf(stderr, "%s:%d expected (%g, %g, %g, %g), got (%g, %g, %g, %g)\n", file, line, expected.x, expected.y, expected.z, expected.w, value.x, value.y, value.z, value.w);
+        abort();
+    }
+}
+
+#define assert_vec4_equal(expected, value) _assert_vec4_equal(expected, value, __FILE__, __LINE__)
+
 static inline void _assert_mat2_equal(const mat2 *expected, const mat2 *value, const char *file, int line)
 {
     int i, j;

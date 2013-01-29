@@ -54,6 +54,13 @@ typedef struct vec3 {
     float z;
 } vec3;
 
+typedef struct vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+} vec4;
+
 typedef struct mat2 {
     float data[4];
 } mat2;
@@ -155,6 +162,55 @@ static inline vec3 vec3_normalize(vec3 a)
 {
     float len = vec3_length(a);
     return Vec3(a.x/len, a.y/len, a.z/len);
+}
+
+
+/* vec4 functions */
+
+static inline vec4 Vec4(float x, float y, float z, float w)
+{
+    vec4 r;
+    r.x = x;
+    r.y = y;
+    r.z = z;
+    r.w = w;
+    return r;
+}
+
+static inline vec4 vec4_add(vec4 a, vec4 b)
+{
+    return Vec4(a.x+b.x, a.y+b.y, a.z+b.z, a.w+b.w);
+}
+
+static inline vec4 vec4_sub(vec4 a, vec4 b)
+{
+    return Vec4(a.x-b.x, a.y-b.y, a.z-b.z, a.w-b.w);
+}
+
+static inline vec4 vec4_scale(vec4 a, float c)
+{
+    return Vec4(a.x*c, a.y*c, a.z*c, a.w*c);
+}
+
+static inline float vec4_dot(vec4 a, vec4 b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+}
+
+static inline float vec4_length(vec4 a)
+{
+    return sqrtf(a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w);
+}
+
+static inline float vec4_distance(vec4 a, vec4 b)
+{
+    return vec4_length(vec4_sub(a, b));
+}
+
+static inline vec4 vec4_normalize(vec4 a)
+{
+    float len = vec4_length(a);
+    return Vec4(a.x/len, a.y/len, a.z/len, a.w/len);
 }
 
 
